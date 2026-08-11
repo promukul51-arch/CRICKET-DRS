@@ -6,104 +6,97 @@
 <title>Gully DRS 🏏</title>
 
 <style>
-*{box-sizing:border-box}
-
-body{
-  margin:0;
-  background:#0b0f14;
-  color:white;
-  font-family:Arial,sans-serif;
-  text-align:center;
+* {
+    box-sizing: border-box;
 }
 
-header{
-  padding:15px;
-  background:#151b24;
-  font-size:24px;
-  font-weight:bold;
+body {
+    margin: 0;
+    background: #0b0b0b;
+    color: white;
+    font-family: Arial, sans-serif;
+    text-align: center;
 }
 
-#cameraBox{
-  position:relative;
-  width:95%;
-  max-width:700px;
-  margin:15px auto;
-  background:#000;
-  border-radius:15px;
-  overflow:hidden;
+header {
+    padding: 18px;
+    font-size: 25px;
+    font-weight: bold;
+    background: #151515;
 }
 
-video{
-  width:100%;
-  display:block;
+#cameraBox {
+    position: relative;
+    width: 96%;
+    max-width: 700px;
+    margin: 15px auto;
+    overflow: hidden;
+    border-radius: 15px;
+    background: black;
 }
 
-.mark{
-  position:absolute;
-  transform:translate(-50%,-50%);
-  pointer-events:none;
+video {
+    width: 100%;
+    display: block;
 }
 
-.wicket{
-  width:90px;
-  height:90px;
-  border:3px solid red;
+#wicket {
+    position: absolute;
+    border: 4px solid red;
+    display: none;
+    pointer-events: none;
 }
 
-.crease{
-  width:170px;
-  height:5px;
-  background:#00ff66;
+button {
+    border: none;
+    border-radius: 10px;
+    padding: 13px 18px;
+    margin: 5px;
+    font-size: 16px;
+    font-weight: bold;
 }
 
-.controls{
-  max-width:700px;
-  margin:auto;
-  padding:10px;
+#start {
+    background: #19a463;
+    color: white;
 }
 
-button{
-  padding:12px 16px;
-  margin:5px;
-  border:0;
-  border-radius:10px;
-  font-size:15px;
-  font-weight:bold;
-  cursor:pointer;
+#setup {
+    background: #e53935;
+    color: white;
 }
 
-.blue{background:#1976d2;color:white}
-.red{background:#e53935;color:white}
-.green{background:#16a34a;color:white}
-.orange{background:#ff9800;color:black}
-.purple{background:#7e57c2;color:white}
-.gray{background:#444;color:white}
-
-#status{
-  margin:12px;
-  padding:12px;
-  background:#151b24;
-  border-radius:10px;
+#drs {
+    background: #7e57c2;
+    color: white;
 }
 
-#replayBox{
-  display:none;
-  max-width:700px;
-  margin:15px auto;
-  padding:15px;
-  background:#151b24;
-  border-radius:15px;
+#status {
+    margin: 12px auto;
+    max-width: 700px;
+    padding: 13px;
+    background: #181818;
+    border-radius: 10px;
 }
 
-#replayVideo{
-  width:100%;
-  border-radius:10px;
+#decision {
+    font-size: 28px;
+    font-weight: bold;
+    margin: 15px;
 }
 
-.result{
-  font-size:24px;
-  font-weight:bold;
-  margin:12px;
+#drsBox {
+    display: none;
+    max-width: 700px;
+    margin: 15px auto;
+    background: #181818;
+    padding: 15px;
+    border-radius: 15px;
+}
+
+#replay {
+    width: 100%;
+    border-radius: 10px;
 }
 </style>
 </head>
@@ -113,316 +106,300 @@ button{
 <header>🏏 GULLY DRS</header>
 
 <div id="cameraBox">
-  <video id="camera" autoplay muted playsinline></video>
+    <video id="camera" autoplay muted playsinline></video>
+    <div id="wicket"></div>
 </div>
 
-<div class="controls">
+<div>
 
-  <button class="blue" onclick="startCamera()">
-    📷 Start Camera
-  </button>
+    <button id="start" onclick="startCamera()">
+        📷 Start Camera
+    </button>
 
-  <button class="red" onclick="markWicket()">
-    🟥 Mark Wicket
-  </button>
+    <button id="setup" onclick="setupWicket()">
+        🟥 Set Wicket
+    </button>
 
-  <button class="green" onclick="markCrease()">
-    🟩 Mark Crease
-  </button>
-
-  <br>
-
-  <button class="orange" onclick="startRecording()">
-    🔴 Record Ball
-  </button>
-
-  <button class="gray" onclick="stopRecording()">
-    ⏹ Stop
-  </button>
-
-  <button class="purple" onclick="openDRS()">
-    🔍 DRS
-  </button>
-
-  <br>
-
-  <button class="red" onclick="decision('WIDE')">
-    WIDE
-  </button>
-
-  <button class="orange" onclick="decision('NO BALL')">
-    NO BALL
-  </button>
-
-  <button class="green" onclick="decision('LEGAL BALL')">
-    LEGAL
-  </button>
+    <button id="drs" onclick="openDRS()">
+        🔍 DRS
+    </button>
 
 </div>
 
 <div id="status">
-  Start the camera to begin.
+    Start the camera first.
 </div>
 
-<div id="result" class="result"></div>
+<div id="decision">
+    —
+</div>
 
-<div id="replayBox">
+<div id="drsBox">
 
-  <h2>🔍 DRS REPLAY</h2>
+    <h2>🔍 DRS REPLAY</h2>
 
-  <video id="replayVideo" controls></video>
+    <video id="replay" controls></video>
 
-  <br>
+    <br><br>
 
-  <button class="purple" onclick="slowMotion()">
-    🐢 Slow Motion
-  </button>
+    <button onclick="slowMotion()">
+        🐢 Slow
+    </button>
 
-  <button class="blue" onclick="normalSpeed()">
-    ▶ Normal
-  </button>
+    <button onclick="normalSpeed()">
+        ▶ Normal
+    </button>
 
-  <button class="gray" onclick="frameBack()">
-    ⏪ Back
-  </button>
+    <button onclick="backFrame()">
+        ⏪
+    </button>
 
-  <button class="gray" onclick="frameForward()">
-    ⏩ Forward
-  </button>
-
-  <div id="drsResult"></div>
+    <button onclick="forwardFrame()">
+        ⏩
+    </button>
 
 </div>
+
 
 <script>
 
-let camera = document.getElementById("camera");
-let replayVideo = document.getElementById("replayVideo");
-let cameraBox = document.getElementById("cameraBox");
-let statusBox = document.getElementById("status");
+const camera = document.getElementById("camera");
+const cameraBox = document.getElementById("cameraBox");
+const wicket = document.getElementById("wicket");
+const status = document.getElementById("status");
+const decision = document.getElementById("decision");
+const replayBox = document.getElementById("drsBox");
+const replay = document.getElementById("replay");
 
-let stream;
-let recorder;
+let stream = null;
+let recorder = null;
 let chunks = [];
-let recordedVideo = null;
-let markMode = "";
+let lastBall = null;
+
+let settingWicket = false;
 
 
-// CAMERA
-async function startCamera(){
+// ---------------- CAMERA ----------------
 
-  try{
+async function startCamera() {
 
-    stream = await navigator.mediaDevices.getUserMedia({
-      video:{
-        facingMode:"environment"
-      },
-      audio:false
-    });
+    try {
 
-    camera.srcObject = stream;
+        stream = await navigator.mediaDevices.getUserMedia({
+            video: {
+                facingMode: "environment"
+            },
+            audio: false
+        });
 
-    statusBox.innerText =
-      "📷 Camera ready. Mark your wall wicket.";
+        camera.srcObject = stream;
 
-  }catch(error){
+        status.innerText =
+            "Camera ready. Set your wall wicket.";
 
-    statusBox.innerText =
-      "❌ Camera permission denied.";
+    } catch (error) {
 
-  }
+        status.innerText =
+            "❌ Camera permission was denied.";
+
+    }
+}
+
+
+// ---------------- WICKET SETUP ----------------
+
+function setupWicket() {
+
+    if (!stream) {
+        status.innerText = "Start the camera first.";
+        return;
+    }
+
+    settingWicket = true;
+
+    status.innerText =
+        "Tap the TOP-LEFT corner of your wall wicket.";
 
 }
 
 
-// MARK WICKET
-function markWicket(){
+// First click = top-left
+// Second click = bottom-right
 
-  markMode = "wicket";
+let firstPoint = null;
 
-  statusBox.innerText =
-    "Tap the exact wall area you use as the wicket.";
+cameraBox.addEventListener("click", function(event) {
 
-}
+    if (!settingWicket) return;
 
+    const rect = cameraBox.getBoundingClientRect();
 
-// MARK CREASE
-function markCrease(){
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
 
-  markMode = "crease";
+    if (!firstPoint) {
 
-  statusBox.innerText =
-    "Tap the batting crease.";
+        firstPoint = {
+            x: x,
+            y: y
+        };
 
-}
+        status.innerText =
+            "Now tap the BOTTOM-RIGHT corner of the wicket.";
 
+        return;
+    }
 
-// TAP CAMERA
-cameraBox.addEventListener("click",function(event){
+    const width = x - firstPoint.x;
+    const height = y - firstPoint.y;
 
-  if(!markMode) return;
+    wicket.style.left = firstPoint.x + "px";
+    wicket.style.top = firstPoint.y + "px";
 
-  let rect = cameraBox.getBoundingClientRect();
+    wicket.style.width = Math.abs(width) + "px";
+    wicket.style.height = Math.abs(height) + "px";
 
-  let x = event.clientX - rect.left;
-  let y = event.clientY - rect.top;
+    wicket.style.display = "block";
 
-  let mark = document.createElement("div");
+    firstPoint = null;
+    settingWicket = false;
 
-  mark.classList.add("mark");
-
-  if(markMode === "wicket"){
-    mark.classList.add("wicket");
-    statusBox.innerText =
-      "🟥 Wicket marked. Now mark the crease.";
-  }
-
-  if(markMode === "crease"){
-    mark.classList.add("crease");
-    statusBox.innerText =
-      "🟩 Setup complete! You can record a ball.";
-  }
-
-  mark.style.left = x+"px";
-  mark.style.top = y+"px";
-
-  cameraBox.appendChild(mark);
-
-  markMode = "";
+    status.innerText =
+        "✅ Wicket saved. Press START to begin.";
 
 });
 
 
-// RECORD
-function startRecording(){
+// ---------------- RECORDING ----------------
 
-  if(!stream){
+function startRecording() {
 
-    statusBox.innerText =
-      "Start the camera first.";
+    if (!stream) {
+        status.innerText = "Start the camera first.";
+        return;
+    }
 
-    return;
-  }
+    chunks = [];
 
-  chunks = [];
+    recorder = new MediaRecorder(stream);
 
-  recorder = new MediaRecorder(stream);
+    recorder.ondataavailable = function(event) {
 
-  recorder.ondataavailable = function(e){
+        if (event.data.size > 0) {
+            chunks.push(event.data);
+        }
 
-    if(e.data.size > 0)
-      chunks.push(e.data);
+    };
 
-  };
+    recorder.onstop = function() {
 
-  recorder.onstop = function(){
+        lastBall = new Blob(chunks, {
+            type: "video/webm"
+        });
 
-    recordedVideo =
-      new Blob(chunks,{type:"video/webm"});
+        status.innerText =
+            "🏏 Delivery saved. Press DRS if needed.";
 
-    statusBox.innerText =
-      "🏏 Ball recorded! Press DRS to review.";
+    };
 
-  };
+    recorder.start();
 
-  recorder.start();
-
-  statusBox.innerText =
-    "🔴 Recording... bowl the ball now!";
-
-}
-
-
-// STOP RECORDING
-function stopRecording(){
-
-  if(recorder && recorder.state === "recording"){
-
-    recorder.stop();
-
-  }
+    status.innerText =
+        "🔴 Recording delivery...";
 
 }
 
 
-// DRS
-function openDRS(){
+// ---------------- DRS ----------------
 
-  if(!recordedVideo){
+function openDRS() {
 
-    statusBox.innerText =
-      "Record a ball first.";
+    if (!lastBall) {
 
-    return;
-  }
+        status.innerText =
+            "No delivery recorded yet.";
 
-  let url = URL.createObjectURL(recordedVideo);
+        return;
+    }
 
-  replayVideo.src = url;
+    const url = URL.createObjectURL(lastBall);
 
-  document.getElementById("replayBox")
-    .style.display = "block";
+    replay.src = url;
 
-  statusBox.innerText =
-    "🔍 DRS is ready. Review the delivery.";
+    replayBox.style.display = "block";
 
-}
-
-
-// SLOW MOTION
-function slowMotion(){
-
-  replayVideo.playbackRate = 0.25;
-
-  replayVideo.play();
+    status.innerText =
+        "🔍 DRS ready.";
 
 }
 
 
-// NORMAL SPEED
-function normalSpeed(){
+// ---------------- REPLAY ----------------
 
-  replayVideo.playbackRate = 1;
+function slowMotion() {
 
-  replayVideo.play();
+    replay.playbackRate = 0.25;
+    replay.play();
+
+}
+
+function normalSpeed() {
+
+    replay.playbackRate = 1;
+    replay.play();
+
+}
+
+function backFrame() {
+
+    replay.pause();
+
+    replay.currentTime =
+        Math.max(0, replay.currentTime - 0.05);
+
+}
+
+function forwardFrame() {
+
+    replay.pause();
+
+    replay.currentTime += 0.05;
 
 }
 
 
-// FRAME BACK
-function frameBack(){
+// ---------------- TEMPORARY AI ----------------
 
-  replayVideo.pause();
+// This is deliberately simple for Version 2.
+// Actual ball detection will be added later.
 
-  replayVideo.currentTime =
-    Math.max(0,replayVideo.currentTime-0.05);
+function showLegal() {
+
+    decision.innerText = "🟢 LEGAL";
+
+}
+
+function showWide() {
+
+    decision.innerText = "🟡 WIDE";
 
 }
 
 
-// FRAME FORWARD
-function frameForward(){
+// Automatically show a temporary result
+// while we build the real computer vision.
 
-  replayVideo.pause();
+setInterval(function() {
 
-  replayVideo.currentTime += 0.05;
+    if (stream && !settingWicket) {
 
-}
+        showLegal();
 
+    }
 
-// DECISION
-function decision(text){
-
-  document.getElementById("result").innerText =
-    "🏏 "+text;
-
-  document.getElementById("drsResult").innerText =
-    "Decision: "+text;
-
-}
+}, 2000);
 
 </script>
 
 </body>
 </html>
-
