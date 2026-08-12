@@ -1,13 +1,13 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Gully DRS - Camera Test</title>
+<title>Gully DRS - Ball Tracker</title>
 
 <style>
+
 body {
     margin: 0;
     background: #090909;
@@ -21,6 +21,7 @@ h1 {
 }
 
 #cameraBox {
+    position: relative;
     width: 95%;
     max-width: 750px;
     margin: auto;
@@ -29,114 +30,197 @@ h1 {
     overflow: hidden;
 }
 
-video {
+#camera {
     width: 100%;
     display: block;
 }
 
+/* RED BALL MARKER */
+
+#ballMarker {
+    position: absolute;
+
+    width: 28px;
+    height: 28px;
+
+    border: 4px solid white;
+    background: red;
+
+    border-radius: 50%;
+
+    transform: translate(-50%, -50%);
+
+    display: none;
+
+    pointer-events: none;
+
+    box-shadow:
+        0 0 10px red;
+}
+
 button {
     margin: 15px 5px;
+
     padding: 14px 20px;
+
     border: none;
     border-radius: 10px;
+
     font-size: 16px;
     font-weight: bold;
+
     background: #1976d2;
     color: white;
 }
 
 #status {
+
     margin: 10px auto;
+
     padding: 15px;
+
     width: 90%;
     max-width: 600px;
+
     background: #181818;
+
     border-radius: 10px;
 }
 
-#frames {
-    font-size: 20px;
-    margin: 15px;
+#debug {
+
+    color: #aaa;
+
+    font-size: 14px;
+
+    margin: 10px;
+
 }
 
 #canvas {
+
     display: none;
+
 }
+
 </style>
+
 </head>
 
 <body>
 
-<h1>🏏 Gully DRS Camera Test</h1>
+
+<h1>🏏 Gully DRS</h1>
+
 
 <div id="cameraBox">
-    <video id="camera" autoplay muted playsinline></video>
+
+    <video
+        id="camera"
+        autoplay
+        muted
+        playsinline>
+    </video>
+
+    <div id="ballMarker"></div>
+
 </div>
+
 
 <button onclick="startCamera()">
     📷 START CAMERA
 </button>
 
+
+<button onclick="startTracking()">
+    🔴 TRACK BALL
+</button>
+
+
 <div id="status">
-    Press START CAMERA.
+    Start the camera first.
 </div>
 
-<div id="frames">
-    Frames: 0
+
+<div id="debug">
+    Tracking: OFF
 </div>
+
 
 <canvas id="canvas"></canvas>
 
+
 <script>
 
-const camera = document.getElementById("camera");
-const status = document.getElementById("status");
-const framesText = document.getElementById("frames");
-const canvas = document.getElementById("canvas");
 
-const ctx = canvas.getContext("2d");
+const camera =
+document.getElementById("camera");
+
+const cameraBox =
+document.getElementById("cameraBox");
+
+const ballMarker =
+document.getElementById("ballMarker");
+
+const status =
+document.getElementById("status");
+
+const debug =
+document.getElementById("debug");
+
+const canvas =
+document.getElementById("canvas");
+
+const ctx =
+canvas.getContext("2d");
+
 
 let stream = null;
-let frameCount = 0;
-let running = false;
+
+let tracking = false;
+
+let previousFrame = null;
 
 
-/* =========================
+/* =================================
    START CAMERA
-========================= */
+================================= */
 
 async function startCamera() {
 
     try {
 
-        stream = await navigator.mediaDevices.getUserMedia({
+        stream =
+        await navigator.mediaDevices.getUserMedia({
 
             video: {
+
                 facingMode: "environment",
+
                 width: {
                     ideal: 1280
                 },
+
                 height: {
                     ideal: 720
                 }
+
             },
 
             audio: false
 
         });
 
+
         camera.srcObject = stream;
 
+
         status.innerText =
-            "✅ CAMERA WORKING";
-
-        running = true;
-
-        countFrames();
+            "✅ Camera working. Now press TRACK BALL.";
 
     }
 
-    catch (error) {
+    catch(error) {
 
         console.error(error);
 
@@ -148,24 +232,262 @@ async function startCamera() {
 }
 
 
-/* =========================
-   COUNT VIDEO FRAMES
-========================= */
+/* =================================
+   START TRACKING
+================================= */
 
-function countFrames() {
+function startTracking() {
 
-    if (!running) return;
+    if (!stream) {
 
-    if (camera.readyState >= 2) {
+        status.innerText =
+            "Start the camera first.";
 
-        frameCount++;
-
-        framesText.innerText =
-            "Frames: " + frameCount;
+        return;
 
     }
 
-    requestAnimationFrame(countFrames);
+
+    tracking = true;
+
+    previousFrame = null;
+
+    debug.innerText =
+        "Tracking: ON";
+
+    status.innerText =
+        "🔴 Looking for moving ball...";
+
+
+    trackBall();
+
+}
+
+
+/* =================================
+   BALL TRACKING
+================================= */
+
+function trackBall() {
+
+    if (!tracking)
+        return;
+
+
+    if (camera.readyState < 2) {
+
+        requestAnimationFrame(trackBall);
+
+        return;
+
+    }
+
+
+    /*
+       Small image = faster processing.
+    */
+
+    const width = 320;
+
+    const height =
+        Math.round(
+            width *
+            camera.videoHeight /
+            camera.videoWidth
+        );
+
+
+    canvas.width = width;
+    canvas.height = height;
+
+
+    ctx.drawImage(
+        camera,
+        0,
+        0,
+        width,
+        height
+    );
+
+
+    const current =
+        ctx.getImageData(
+            0,
+            0,
+            width,
+            height
+        ).data;
+
+
+    if (previousFrame) {
+
+        let totalChanged = 0;
+
+        let minX = width;
+        let maxX = 0;
+
+        let minY = height;
+        let maxY = 0;
+
+
+        /*
+          Check every 4th pixel.
+        */
+
+        for (
+            let y = 0;
+            y < height;
+            y += 4
+        ) {
+
+            for (
+                let x = 0;
+                x < width;
+                x += 4
+            ) {
+
+                const index =
+                    (y * width + x) * 4;
+
+
+                const r =
+                    current[index];
+
+                const g =
+                    current[index + 1];
+
+                const b =
+                    current[index + 2];
+
+
+                const oldR =
+                    previousFrame[index];
+
+                const oldG =
+                    previousFrame[index + 1];
+
+                const oldB =
+                    previousFrame[index + 2];
+
+
+                const difference =
+                    Math.abs(r - oldR) +
+                    Math.abs(g - oldG) +
+                    Math.abs(b - oldB);
+
+
+                /*
+                   Strong movement.
+                */
+
+                if (difference > 100) {
+
+                    totalChanged++;
+
+                    minX =
+                        Math.min(minX, x);
+
+                    maxX =
+                        Math.max(maxX, x);
+
+                    minY =
+                        Math.min(minY, y);
+
+                    maxY =
+                        Math.max(maxY, y);
+
+                }
+
+            }
+
+        }
+
+
+        const boxWidth =
+            maxX - minX;
+
+        const boxHeight =
+            maxY - minY;
+
+
+        /*
+          We are looking for a
+          relatively small moving object.
+
+          Ignore huge movements.
+        */
+
+        if (
+            totalChanged > 4 &&
+            totalChanged < 500 &&
+            boxWidth < 80 &&
+            boxHeight < 80
+        ) {
+
+            const centerX =
+                (minX + maxX) / 2;
+
+            const centerY =
+                (minY + maxY) / 2;
+
+
+            /*
+              Convert small canvas
+              coordinates to camera
+              coordinates.
+            */
+
+            const screenX =
+                centerX *
+                cameraBox.clientWidth /
+                width;
+
+            const screenY =
+                centerY *
+                cameraBox.clientHeight /
+                height;
+
+
+            ballMarker.style.left =
+                screenX + "px";
+
+            ballMarker.style.top =
+                screenY + "px";
+
+
+            ballMarker.style.display =
+                "block";
+
+
+            status.innerText =
+                "🔴 MOVING OBJECT DETECTED";
+
+
+            debug.innerText =
+                "Tracking: ON | X: " +
+                Math.round(screenX) +
+                " | Y: " +
+                Math.round(screenY);
+
+        }
+
+        else {
+
+            ballMarker.style.display =
+                "none";
+
+            status.innerText =
+                "👀 Looking for ball...";
+
+        }
+
+    }
+
+
+    previousFrame = current;
+
+
+    requestAnimationFrame(trackBall);
 
 }
 
