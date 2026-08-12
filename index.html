@@ -2,153 +2,121 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-<title>Mukul's Gully DRS 🏏</title>
-
-<!-- TensorFlow.js -->
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0"></script>
-
-<!-- COCO-SSD object detection -->
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+<title>Gully DRS 🏏</title>
 
 <style>
-* {
-    box-sizing: border-box;
+*{box-sizing:border-box}
+
+body{
+    margin:0;
+    background:#090909;
+    color:white;
+    font-family:Arial,sans-serif;
+    text-align:center;
 }
 
-body {
-    margin: 0;
-    background: #090909;
-    color: white;
-    font-family: Arial, sans-serif;
-    text-align: center;
+header{
+    padding:18px;
+    background:#151515;
+    font-size:26px;
+    font-weight:bold;
 }
 
-header {
-    background: #151515;
-    padding: 18px;
-    font-size: 26px;
-    font-weight: bold;
+#cameraBox{
+    position:relative;
+    width:96%;
+    max-width:750px;
+    margin:15px auto;
+    overflow:hidden;
+    border-radius:15px;
+    background:#000;
 }
 
-#cameraBox {
-    position: relative;
-    width: 96%;
-    max-width: 750px;
-    margin: 15px auto;
-    overflow: hidden;
-    border-radius: 15px;
-    background: black;
+#camera{
+    width:100%;
+    display:block;
 }
 
-#camera {
-    width: 100%;
-    display: block;
+#wicket{
+    position:absolute;
+    border:4px solid red;
+    display:none;
+    pointer-events:none;
 }
 
-#wicket {
-    position: absolute;
-    border: 4px solid red;
-    display: none;
-    pointer-events: none;
+.wideLine{
+    position:absolute;
+    top:0;
+    width:4px;
+    height:100%;
+    background:#ffe600;
+    display:none;
+    pointer-events:none;
 }
 
-.wideLine {
-    position: absolute;
-    top: 0;
-    width: 4px;
-    height: 100%;
-    background: yellow;
-    display: none;
-    pointer-events: none;
+#ballMarker{
+    position:absolute;
+    width:24px;
+    height:24px;
+    border:3px solid white;
+    border-radius:50%;
+    background:red;
+    display:none;
+    transform:translate(-50%,-50%);
+    pointer-events:none;
 }
 
-#ballMarker {
-    position: absolute;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    border: 3px solid white;
-    background: red;
-    display: none;
-    transform: translate(-50%, -50%);
-    pointer-events: none;
+button{
+    border:0;
+    border-radius:10px;
+    padding:13px 17px;
+    margin:5px;
+    font-size:15px;
+    font-weight:bold;
 }
 
-button {
-    border: none;
-    border-radius: 10px;
-    padding: 13px 17px;
-    margin: 5px;
-    font-size: 15px;
-    font-weight: bold;
-    cursor: pointer;
+.blue{background:#1976d2;color:white}
+.red{background:#e53935;color:white}
+.yellow{background:#e5b800;color:#000}
+.green{background:#16a34a;color:white}
+.purple{background:#7e57c2;color:white}
+.gray{background:#555;color:white}
+
+#status{
+    width:94%;
+    max-width:700px;
+    margin:12px auto;
+    padding:13px;
+    background:#181818;
+    border-radius:10px;
 }
 
-.blue {
-    background: #1976d2;
-    color: white;
+#decision{
+    font-size:30px;
+    font-weight:bold;
+    margin:15px;
 }
 
-.red {
-    background: #e53935;
-    color: white;
+#debug{
+    color:#999;
+    font-size:13px;
 }
 
-.yellow {
-    background: #e5b800;
-    color: black;
+#drsBox{
+    display:none;
+    width:94%;
+    max-width:700px;
+    margin:15px auto;
+    padding:15px;
+    background:#181818;
+    border-radius:15px;
 }
 
-.green {
-    background: #16a34a;
-    color: white;
-}
-
-.purple {
-    background: #7e57c2;
-    color: white;
-}
-
-.gray {
-    background: #555;
-    color: white;
-}
-
-#status {
-    width: 94%;
-    max-width: 700px;
-    margin: 12px auto;
-    padding: 13px;
-    background: #181818;
-    border-radius: 10px;
-}
-
-#decision {
-    font-size: 30px;
-    font-weight: bold;
-    margin: 15px;
-}
-
-#confidence {
-    color: #aaa;
-    margin-bottom: 10px;
-}
-
-#drsBox {
-    display: none;
-    width: 94%;
-    max-width: 700px;
-    margin: 15px auto;
-    padding: 15px;
-    background: #181818;
-    border-radius: 15px;
-}
-
-#replay {
-    width: 100%;
-    border-radius: 10px;
+#replay{
+    width:100%;
+    border-radius:10px;
 }
 </style>
 </head>
@@ -159,8 +127,7 @@ button {
 
 <div id="cameraBox">
 
-    <video
-        id="camera"
+    <video id="camera"
         autoplay
         muted
         playsinline>
@@ -168,767 +135,763 @@ button {
 
     <div id="wicket"></div>
 
-    <div
-        id="leftWide"
-        class="wideLine">
-    </div>
+    <div id="leftWide"
+        class="wideLine"></div>
 
-    <div
-        id="rightWide"
-        class="wideLine">
-    </div>
+    <div id="rightWide"
+        class="wideLine"></div>
 
     <div id="ballMarker"></div>
 
 </div>
 
+
 <div>
 
-    <button class="blue" onclick="startCamera()">
-        📷 Start Camera
-    </button>
+<button class="blue"
+onclick="startCamera()">
+📷 Start Camera
+</button>
 
-    <button class="red" onclick="setWicket()">
-        🟥 Set Wicket
-    </button>
+<button class="red"
+onclick="setWicket()">
+🟥 Set Wicket
+</button>
 
-    <button class="yellow" onclick="setWideLines()">
-        🟡 Set Wide Lines
-    </button>
+<button class="yellow"
+onclick="setWideLines()">
+🟡 Set Wide Lines
+</button>
 
-    <br>
+<br>
 
-    <button class="green" onclick="startUmpire()">
-        ▶️ START UMPIRE
-    </button>
+<button class="green"
+onclick="startUmpire()">
+▶️ START UMPIRE
+</button>
 
-    <button class="gray" onclick="stopUmpire()">
-        ⏹ STOP
-    </button>
+<button class="gray"
+onclick="stopUmpire()">
+⏹ STOP
+</button>
 
-    <button class="purple" onclick="openDRS()">
-        🔍 DRS
-    </button>
+<button class="purple"
+onclick="openDRS()">
+🔍 DRS
+</button>
 
 </div>
+
 
 <div id="status">
-    Loading computer vision...
+Start the camera first.
 </div>
 
-<div id="decision">
-    —
-</div>
+<div id="decision">—</div>
 
-<div id="confidence"></div>
+<div id="debug"></div>
+
 
 <div id="drsBox">
 
-    <h2>🔍 DRS REPLAY</h2>
+<h2>🔍 DRS REPLAY</h2>
 
-    <video id="replay" controls></video>
+<video id="replay" controls></video>
 
-    <br>
+<br>
 
-    <button class="purple" onclick="slowMotion()">
-        🐢 Slow
-    </button>
+<button class="purple"
+onclick="slowMotion()">
+🐢 Slow
+</button>
 
-    <button class="blue" onclick="normalSpeed()">
-        ▶ Normal
-    </button>
+<button class="blue"
+onclick="normalSpeed()">
+▶ Normal
+</button>
 
-    <button class="gray" onclick="backFrame()">
-        ⏪
-    </button>
+<button class="gray"
+onclick="backFrame()">
+⏪
+</button>
 
-    <button class="gray" onclick="forwardFrame()">
-        ⏩
-    </button>
+<button class="gray"
+onclick="forwardFrame()">
+⏩
+</button>
 
 </div>
+
+
+<!-- Hidden canvas used for motion detection -->
+<canvas id="motionCanvas"></canvas>
 
 
 <script>
 
 const camera =
-    document.getElementById("camera");
+document.getElementById("camera");
 
 const cameraBox =
-    document.getElementById("cameraBox");
+document.getElementById("cameraBox");
 
 const wicket =
-    document.getElementById("wicket");
+document.getElementById("wicket");
 
 const leftWide =
-    document.getElementById("leftWide");
+document.getElementById("leftWide");
 
 const rightWide =
-    document.getElementById("rightWide");
+document.getElementById("rightWide");
 
 const ballMarker =
-    document.getElementById("ballMarker");
+document.getElementById("ballMarker");
 
 const status =
-    document.getElementById("status");
+document.getElementById("status");
 
 const decision =
-    document.getElementById("decision");
+document.getElementById("decision");
 
-const confidence =
-    document.getElementById("confidence");
+const debug =
+document.getElementById("debug");
 
 const replay =
-    document.getElementById("replay");
+document.getElementById("replay");
 
 const drsBox =
-    document.getElementById("drsBox");
+document.getElementById("drsBox");
+
+const canvas =
+document.getElementById("motionCanvas");
+
+const ctx =
+canvas.getContext("2d");
 
 
-let stream = null;
-let model = null;
+let stream=null;
 
-let umpireRunning = false;
+let umpireRunning=false;
 
-let settingWicket = false;
-let settingWide = false;
+let settingWicket=false;
 
-let wicketFirstPoint = null;
-let wideFirstPoint = null;
+let settingWide=false;
 
-let leftWideX = null;
-let rightWideX = null;
+let wicketFirst=null;
 
-let recorder = null;
-let chunks = [];
-let lastBall = null;
+let wideFirst=null;
 
-let detectionBusy = false;
+let leftWideX=null;
 
+let rightWideX=null;
 
-/* =====================================
-   LOAD COMPUTER VISION
-===================================== */
+let previousFrame=null;
 
-async function loadVision() {
+let lastDetection=null;
 
-    try {
+let recorder=null;
 
-        status.innerText =
-            "🤖 Loading computer vision...";
+let chunks=[];
 
-        await tf.ready();
-
-        model =
-            await cocoSsd.load();
-
-        status.innerText =
-            "🤖 Computer vision ready!";
-
-    }
-
-    catch(error) {
-
-        console.error(error);
-
-        status.innerText =
-            "❌ Computer vision failed to load.";
-
-    }
-}
-
-loadVision();
+let lastBall=null;
 
 
-/* =====================================
+/* =================================
    CAMERA
-===================================== */
+================================= */
 
-async function startCamera() {
+async function startCamera(){
 
-    try {
+    try{
 
         stream =
-            await navigator.mediaDevices.getUserMedia({
+        await navigator.mediaDevices.getUserMedia({
 
-                video: {
-                    facingMode: "environment",
-                    width: {
-                        ideal: 1280
-                    },
-                    height: {
-                        ideal: 720
-                    }
-                },
+            video:{
+                facingMode:"environment",
+                width:{ideal:1280},
+                height:{ideal:720}
+            },
 
-                audio: false
+            audio:false
 
-            });
+        });
 
-        camera.srcObject = stream;
+        camera.srcObject=stream;
 
-        status.innerText =
-            "📷 Camera ready. Set your wicket.";
+        status.innerText=
+        "📷 Camera ready. Set your wicket.";
 
     }
 
-    catch(error) {
+    catch(e){
 
-        status.innerText =
-            "❌ Camera permission denied.";
+        status.innerText=
+        "❌ Camera permission denied.";
 
     }
+
 }
 
 
-/* =====================================
-   SET WICKET
-===================================== */
+/* =================================
+   WICKET
+================================= */
 
-function setWicket() {
+function setWicket(){
 
-    if (!stream) {
+    if(!stream){
 
-        status.innerText =
-            "Start the camera first.";
+        status.innerText=
+        "Start the camera first.";
 
         return;
     }
 
-    settingWicket = true;
-    wicketFirstPoint = null;
+    settingWicket=true;
+    wicketFirst=null;
 
-    status.innerText =
-        "Tap TOP-LEFT of the wall wicket.";
+    status.innerText=
+    "Tap TOP-LEFT of your wall wicket.";
 
 }
 
 
-/* =====================================
-   SET WIDE LINES
-===================================== */
+/* =================================
+   WIDE LINES
+================================= */
 
-function setWideLines() {
+function setWideLines(){
 
-    if (wicket.style.display !== "block") {
+    if(wicket.style.display!=="block"){
 
-        status.innerText =
-            "Set the wicket first.";
+        status.innerText=
+        "Set the wicket first.";
 
         return;
     }
 
-    settingWide = true;
-    wideFirstPoint = null;
+    settingWide=true;
+    wideFirst=null;
 
-    status.innerText =
-        "Tap the LEFT wide line.";
+    status.innerText=
+    "Tap LEFT wide line.";
 
 }
 
 
-/* =====================================
-   CAMERA CLICK
-===================================== */
+/* =================================
+   SCREEN CLICKS
+================================= */
 
 cameraBox.addEventListener(
-    "click",
-    function(event) {
+"click",
+function(e){
 
-        const rect =
-            cameraBox.getBoundingClientRect();
+    const rect=
+    cameraBox.getBoundingClientRect();
 
-        const x =
-            event.clientX - rect.left;
+    const x=
+    e.clientX-rect.left;
 
-        const y =
-            event.clientY - rect.top;
-
-
-        /* WICKET */
-
-        if (settingWicket) {
-
-            if (!wicketFirstPoint) {
-
-                wicketFirstPoint = {
-                    x: x,
-                    y: y
-                };
-
-                status.innerText =
-                    "Tap BOTTOM-RIGHT of wicket.";
-
-                return;
-            }
-
-            const left =
-                Math.min(
-                    wicketFirstPoint.x,
-                    x
-                );
-
-            const top =
-                Math.min(
-                    wicketFirstPoint.y,
-                    y
-                );
-
-            const width =
-                Math.abs(
-                    x - wicketFirstPoint.x
-                );
-
-            const height =
-                Math.abs(
-                    y - wicketFirstPoint.y
-                );
+    const y=
+    e.clientY-rect.top;
 
 
-            wicket.style.left =
-                left + "px";
+    /* WICKET */
 
-            wicket.style.top =
-                top + "px";
+    if(settingWicket){
 
-            wicket.style.width =
-                width + "px";
+        if(!wicketFirst){
 
-            wicket.style.height =
-                height + "px";
+            wicketFirst={x,y};
 
-            wicket.style.display =
-                "block";
-
-
-            wicketFirstPoint = null;
-            settingWicket = false;
-
-            status.innerText =
-                "🟥 Wicket saved. Set wide lines.";
+            status.innerText=
+            "Tap BOTTOM-RIGHT of wicket.";
 
             return;
         }
 
+        const left=
+        Math.min(wicketFirst.x,x);
 
-        /* WIDE LINES */
+        const top=
+        Math.min(wicketFirst.y,y);
 
-        if (settingWide) {
+        const width=
+        Math.abs(x-wicketFirst.x);
 
-            if (wideFirstPoint === null) {
-
-                wideFirstPoint = x;
-
-                leftWideX = x;
-
-                leftWide.style.left =
-                    x + "px";
-
-                leftWide.style.display =
-                    "block";
-
-                status.innerText =
-                    "Now tap the RIGHT wide line.";
-
-                return;
-            }
+        const height=
+        Math.abs(y-wicketFirst.y);
 
 
-            rightWideX = x;
+        wicket.style.left=left+"px";
+        wicket.style.top=top+"px";
+        wicket.style.width=width+"px";
+        wicket.style.height=height+"px";
 
-            rightWide.style.left =
-                x + "px";
+        wicket.style.display="block";
 
-            rightWide.style.display =
-                "block";
+        wicketFirst=null;
+        settingWicket=false;
+
+        status.innerText=
+        "🟥 Wicket saved. Set wide lines.";
+
+        return;
+    }
 
 
-            wideFirstPoint = null;
-            settingWide = false;
+    /* WIDE LINES */
 
-            status.innerText =
-                "🟡 Wide lines saved. Press START UMPIRE.";
+    if(settingWide){
 
+        if(wideFirst===null){
+
+            wideFirst=x;
+            leftWideX=x;
+
+            leftWide.style.left=x+"px";
+            leftWide.style.display="block";
+
+            status.innerText=
+            "Tap RIGHT wide line.";
+
+            return;
         }
 
+        rightWideX=x;
+
+        rightWide.style.left=x+"px";
+        rightWide.style.display="block";
+
+        wideFirst=null;
+        settingWide=false;
+
+        status.innerText=
+        "🟡 Wide lines saved. Press START UMPIRE.";
+
     }
-);
+
+});
 
 
-/* =====================================
+/* =================================
    START UMPIRE
-===================================== */
+================================= */
 
-function startUmpire() {
+function startUmpire(){
 
-    if (!model) {
+    if(!stream){
 
-        status.innerText =
-            "🤖 Computer vision is still loading.";
-
-        return;
-    }
-
-    if (!stream) {
-
-        status.innerText =
-            "Start the camera first.";
+        status.innerText=
+        "Start the camera first.";
 
         return;
     }
 
-    if (wicket.style.display !== "block") {
+    if(wicket.style.display!=="block"){
 
-        status.innerText =
-            "Set the wicket first.";
+        status.innerText=
+        "Set the wicket first.";
 
         return;
     }
 
-    if (
-        leftWideX === null ||
-        rightWideX === null
-    ) {
+    if(leftWideX===null ||
+       rightWideX===null){
 
-        status.innerText =
-            "Set both wide lines first.";
+        status.innerText=
+        "Set both wide lines first.";
 
         return;
     }
 
 
-    umpireRunning = true;
+    umpireRunning=true;
 
-    decision.innerText =
-        "🤖 WATCHING";
+    decision.innerText=
+    "👀 WATCHING";
 
-    status.innerText =
-        "🟢 AI UMPIRE ACTIVE";
+    status.innerText=
+    "🟢 AI UMPIRE ACTIVE";
 
     startRecording();
 
-    detectBall();
+    previousFrame=null;
+
+    detectMotion();
 
 }
 
 
-/* =====================================
+/* =================================
    RECORD
-===================================== */
+================================= */
 
-function startRecording() {
+function startRecording(){
 
-    if (!stream) return;
+    if(!stream)return;
 
-    chunks = [];
+    chunks=[];
 
-    recorder =
-        new MediaRecorder(stream);
+    recorder=
+    new MediaRecorder(stream);
 
+    recorder.ondataavailable=
+    e=>{
 
-    recorder.ondataavailable =
-        function(event) {
+        if(e.data.size>0)
+            chunks.push(e.data);
 
-            if (event.data.size > 0) {
+    };
 
-                chunks.push(event.data);
+    recorder.onstop=()=>{
 
-            }
+        lastBall=
+        new Blob(chunks,{
+            type:"video/webm"
+        });
 
-        };
-
-
-    recorder.onstop =
-        function() {
-
-            lastBall =
-                new Blob(
-                    chunks,
-                    {
-                        type: "video/webm"
-                    }
-                );
-
-        };
-
+    };
 
     recorder.start();
 
 }
 
 
-/* =====================================
-   COMPUTER VISION
-===================================== */
+/* =================================
+   MOTION DETECTION
+================================= */
 
-async function detectBall() {
+function detectMotion(){
 
-    if (!umpireRunning || !model)
-        return;
+    if(!umpireRunning)return;
 
-    if (detectionBusy) {
+    if(camera.readyState<2){
 
-        requestAnimationFrame(detectBall);
+        requestAnimationFrame(
+            detectMotion
+        );
 
         return;
     }
 
-    detectionBusy = true;
+
+    /*
+       Small processing image.
+       This makes the phone work faster.
+    */
+
+    const W=320;
+
+    const ratio=
+    camera.videoHeight/
+    camera.videoWidth;
+
+    const H=
+    Math.round(W*ratio);
 
 
-    try {
+    canvas.width=W;
+    canvas.height=H;
 
-        const predictions =
-            await model.detect(camera);
+
+    ctx.drawImage(
+        camera,
+        0,0,W,H
+    );
+
+
+    const frame=
+    ctx.getImageData(
+        0,0,W,H
+    ).data;
+
+
+    if(previousFrame){
+
+        let minX=W;
+        let maxX=0;
+
+        let minY=H;
+        let maxY=0;
+
+        let changed=0;
 
 
         /*
-         * COCO-SSD has a "sports ball"
-         * category.
-         */
+          Find pixels that changed
+          strongly between frames.
+        */
 
-        const balls =
-            predictions.filter(
-                p =>
-                    p.class === "sports ball" &&
-                    p.score > 0.25
-            );
+        for(
+            let y=0;
+            y<H;
+            y+=3
+        ){
 
+            for(
+                let x=0;
+                x<W;
+                x+=3
+            ){
 
-        if (balls.length > 0) {
+                const i=
+                (y*W+x)*4;
 
-            /*
-             * Pick the most confident
-             * sports-ball detection.
-             */
+                const r=
+                frame[i];
 
-            balls.sort(
-                (a,b) =>
-                    b.score - a.score
-            );
+                const g=
+                frame[i+1];
 
-
-            const ball =
-                balls[0];
-
-
-            const [x,y,width,height] =
-                ball.bbox;
+                const b=
+                frame[i+2];
 
 
-            const centerX =
-                x + width / 2;
+                const pr=
+                previousFrame[i];
 
-            const centerY =
-                y + height / 2;
+                const pg=
+                previousFrame[i+1];
 
-
-            /*
-             * Convert camera coordinates
-             * to displayed camera coordinates.
-             */
-
-            const scaleX =
-                cameraBox.clientWidth /
-                camera.videoWidth;
-
-            const scaleY =
-                cameraBox.clientHeight /
-                camera.videoHeight;
+                const pb=
+                previousFrame[i+2];
 
 
-            const displayX =
-                centerX * scaleX;
-
-            const displayY =
-                centerY * scaleY;
-
-
-            ballMarker.style.left =
-                displayX + "px";
-
-            ballMarker.style.top =
-                displayY + "px";
-
-            ballMarker.style.display =
-                "block";
+                const difference=
+                Math.abs(r-pr)+
+                Math.abs(g-pg)+
+                Math.abs(b-pb);
 
 
-            confidence.innerText =
-                "Ball confidence: " +
-                Math.round(ball.score * 100) +
-                "%";
+                /*
+                   High difference =
+                   possible moving ball.
+                */
 
+                if(difference>110){
 
-            /*
-             * WIDE TEST
-             *
-             * For this first prototype,
-             * we compare the ball's horizontal
-             * position with the two lines.
-             */
+                    changed++;
 
-            const minX =
-                Math.min(
-                    leftWideX,
-                    rightWideX
-                );
+                    minX=Math.min(minX,x);
+                    maxX=Math.max(maxX,x);
 
-            const maxX =
-                Math.max(
-                    leftWideX,
-                    rightWideX
-                );
+                    minY=Math.min(minY,y);
+                    maxY=Math.max(maxY,y);
 
-
-            if (
-                displayX < minX ||
-                displayX > maxX
-            ) {
-
-                decision.innerText =
-                    "🟡 WIDE";
-
-            }
-
-            else {
-
-                decision.innerText =
-                    "🟢 LEGAL";
+                }
 
             }
 
         }
 
-        else {
 
-            ballMarker.style.display =
-                "none";
+        const boxWidth=maxX-minX;
+        const boxHeight=maxY-minY;
 
-            decision.innerText =
-                "👀 SEARCHING";
 
-            confidence.innerText =
-                "";
+        /*
+          Reject huge movements such as
+          people moving across the camera.
+        */
+
+        if(
+            changed>3 &&
+            changed<900 &&
+            boxWidth<90 &&
+            boxHeight<90
+        ){
+
+            const ballX=
+            ((minX+maxX)/2)
+            *cameraBox.clientWidth/W;
+
+            const ballY=
+            ((minY+maxY)/2)
+            *cameraBox.clientHeight/H;
+
+
+            showBall(
+                ballX,
+                ballY
+            );
 
         }
 
     }
 
-    catch(error) {
 
-        console.error(error);
+    previousFrame=frame;
+
+
+    requestAnimationFrame(
+        detectMotion
+    );
+
+}
+
+
+/* =================================
+   SHOW DETECTED BALL
+================================= */
+
+function showBall(x,y){
+
+    ballMarker.style.left=
+    x+"px";
+
+    ballMarker.style.top=
+    y+"px";
+
+    ballMarker.style.display=
+    "block";
+
+
+    lastDetection={
+        x:x,
+        y:y,
+        time:Date.now()
+    };
+
+
+    debug.innerText=
+    "Moving object detected";
+
+
+    /*
+      Compare horizontal position
+      with wide boundaries.
+    */
+
+    const left=
+    Math.min(
+        leftWideX,
+        rightWideX
+    );
+
+    const right=
+    Math.max(
+        leftWideX,
+        rightWideX
+    );
+
+
+    if(x<left || x>right){
+
+        decision.innerText=
+        "🟡 WIDE";
+
+        status.innerText=
+        "🟡 Possible WIDE detected!";
 
     }
 
+    else{
 
-    detectionBusy = false;
+        decision.innerText=
+        "🟢 LEGAL";
 
-
-    if (umpireRunning) {
-
-        requestAnimationFrame(
-            detectBall
-        );
+        status.innerText=
+        "🟢 Ball inside wide area.";
 
     }
 
 }
 
 
-/* =====================================
+/* =================================
    STOP
-===================================== */
+================================= */
 
-function stopUmpire() {
+function stopUmpire(){
 
-    umpireRunning = false;
+    umpireRunning=false;
 
-    if (
+    if(
         recorder &&
-        recorder.state === "recording"
-    ) {
+        recorder.state==="recording"
+    ){
 
         recorder.stop();
 
     }
 
-    ballMarker.style.display =
-        "none";
+    ballMarker.style.display=
+    "none";
 
-    decision.innerText =
-        "⏹ STOPPED";
+    decision.innerText=
+    "⏹ STOPPED";
 
-    status.innerText =
-        "AI Umpire stopped.";
+    status.innerText=
+    "AI Umpire stopped.";
 
 }
 
 
-/* =====================================
+/* =================================
    DRS
-===================================== */
+================================= */
 
-function openDRS() {
+function openDRS(){
 
-    if (!lastBall) {
+    if(!lastBall){
 
-        status.innerText =
-            "No recording available yet.";
+        status.innerText=
+        "No delivery recorded yet.";
 
         return;
     }
 
+    const url=
+    URL.createObjectURL(lastBall);
 
-    const url =
-        URL.createObjectURL(lastBall);
+    replay.src=url;
 
-    replay.src = url;
+    drsBox.style.display="block";
 
-    drsBox.style.display =
-        "block";
-
-    status.innerText =
-        "🔍 DRS replay ready.";
+    status.innerText=
+    "🔍 DRS replay ready.";
 
 }
 
 
-/* =====================================
+/* =================================
    REPLAY
-===================================== */
+================================= */
 
-function slowMotion() {
+function slowMotion(){
 
-    replay.playbackRate = 0.25;
+    replay.playbackRate=.25;
     replay.play();
 
 }
 
-function normalSpeed() {
+function normalSpeed(){
 
-    replay.playbackRate = 1;
+    replay.playbackRate=1;
     replay.play();
 
 }
 
-function backFrame() {
+function backFrame(){
 
     replay.pause();
 
-    replay.currentTime =
-        Math.max(
-            0,
-            replay.currentTime - 0.05
-        );
+    replay.currentTime=
+    Math.max(
+        0,
+        replay.currentTime-.05
+    );
 
 }
 
-function forwardFrame() {
+function forwardFrame(){
 
     replay.pause();
 
-    replay.currentTime += 0.05;
+    replay.currentTime+=.05;
 
 }
 
